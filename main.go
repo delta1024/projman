@@ -16,7 +16,9 @@ type state struct {
 
 func initState() state {
 	return state{
-		projects: []string{},
+		projects: []string{
+			"~/code/go/projman",
+		},
 		menu: []string{
 			"Add Project",
 		},
@@ -40,7 +42,7 @@ func (s state) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "down", "j":
-			if s.cursor < (len(s.projects)-1)+(len(s.menu)-1) {
+			if s.cursor < (len(s.projects))+(len(s.menu))-1 {
 				s.cursor++
 			}
 		case "enter", " ":
@@ -65,7 +67,7 @@ func (s state) View() string {
 		o += fmt.Sprintf("%s %s\n", cursor, choice)
 	}
 	o += "\n---\n\n"
-	pi := len(s.menu) - 1
+	pi := len(s.menu)
 	for i, choice := range s.projects {
 		cursor := " "
 		if s.cursor == i+pi {

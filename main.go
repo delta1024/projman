@@ -1,15 +1,8 @@
 package main
 
-import (
-	"fmt"
-	tea "github.com/charmbracelet/bubbletea"
-	"os"
-)
+import "fmt"
+
 
 func main() {
-	p := tea.NewProgram(newModel())
-	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v", err)
-		os.Exit(1)
-	}
+	fmt.Printf("Hello world\n")
 }

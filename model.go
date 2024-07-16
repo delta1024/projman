@@ -1,10 +1,18 @@
 package main
 
-import tea "github.com/charmbracelet/bubbletea"
-type model struct {}
+import (
+	"github.com/charmbracelet/bubbles/key"
+	tea "github.com/charmbracelet/bubbletea"
+)
+
+type model struct {
+	keys keyMap
+}
 
 func newModel() model {
-	return model{}
+	return model{
+		keys: defaultKeys(),
+	}
 }
 
 func (m model) Init() tea.Cmd {
@@ -13,9 +21,9 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c", "q":
-		return m, tea.Quit
+		switch {
+		case key.Matches(msg, m.keys.Quit):
+			return m, tea.Quit
 		}
 	}
 	return m, nil

@@ -2,7 +2,10 @@ module github.com/delta1024/projman
 
 go 1.22.5
 
-require github.com/charmbracelet/bubbletea v0.26.6
+require (
+	github.com/charmbracelet/bubbles v0.18.0
+	github.com/charmbracelet/bubbletea v0.26.6
+)
 
 require (
 	github.com/charmbracelet/x/ansi v0.1.2 // indirect

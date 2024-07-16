@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	tea "github.com/charmbracelet/bubbletea"
+	"os"
 )
 
 func main() {

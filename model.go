@@ -1,92 +1,56 @@
 package main
 
 import (
-	"os"
-	"path"
-
-	"github.com/charmbracelet/bubbles/filepicker"
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-)
-
-type progMode int
-
-const (
-	Init progMode = iota - 1
-	DisplayFile
-	RePickFile
+	"github.com/delta1024/projman/lists"
 )
 
 type model struct {
-	keys         keyMap
-	help         help.Model
-	filepicker   filepicker.Model
-	selectedFile string
-	mode         progMode
+	keys keyMap
+	help help.Model
+	list lists.Model
+	err error
 }
 
-func newFp() filepicker.Model {
-	fp := filepicker.New()
-	hDir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-	fp.CurrentDirectory = path.Join(hDir, "code")
-	fp.AutoHeight = false
-	fp.Height = 5
-	return fp
-}
 func newModel() model {
 	return model{
-		keys:       defaultKeys(),
-		help:       help.New(),
-		filepicker: newFp(),
-		mode:       RePickFile,
+		keys: defaultKeys(),
+		help: help.New(),
+		list: lists.New([]string{
+			"/home/jake/code/go/projman",
+			"/home/jake/code/zig/projman",
+		}),
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	return m.filepicker.Init()
+	return nil
 }
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case writeFileDone:
+		return m, tea.Quit
+	case writeFileError:
+		m.err = msg.msg
+		return m, tea.Quit
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.Quit):
 			return m, tea.Quit
-		case key.Matches(msg, m.keys.Restart):
-			if m.mode == DisplayFile {
-				m.mode = RePickFile
-				m.filepicker = newFp()
-				m.keys.FilePicker = true
-				return m, m.filepicker.Init()
-			}
 		}
 	}
-	switch m.mode {
-	case RePickFile:
-		var cmd tea.Cmd
-		m.filepicker, cmd = m.filepicker.Update(msg)
-		if selected, file := m.filepicker.DidSelectFile(msg); selected {
-			m.selectedFile = file
-			m.keys.FilePicker = false
-			m.mode = DisplayFile
-		}
-		return m, cmd
+	var cmd tea.Cmd
+	m.list, cmd = m.list.Update(msg)
+	if m.list.Choice != "" {
+		return m, writePathToFile(m.list.Choice)
 	}
-	return m, nil
+	return m, cmd
 }
 func (m model) View() string {
-	var msg string
-	if m.mode == DisplayFile {
-		msg = m.selectedFile + "\n"
-	} else if m.mode == Init {
-		return ""
-	} else {
-		msg = m.filepicker.View() + "\n"
+	if m.err != nil {
+		return m.err.Error()
 	}
-	helpView := m.help.View(m.keys)
-
-	return "\n" + msg + helpView
+	return "\n" + m.list.View()
 }

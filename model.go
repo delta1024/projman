@@ -11,7 +11,7 @@ type model struct {
 	keys keyMap
 	help help.Model
 	list lists.Model
-	err error
+	err  error
 }
 
 func newModel() model {
@@ -30,21 +30,21 @@ func (m model) Init() tea.Cmd {
 }
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case writeFileDone:
-		return m, tea.Quit
-	case writeFileError:
-		m.err = msg.msg
-		return m, tea.Quit
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.Quit):
 			return m, tea.Quit
 		}
+	case spawnError:
+		m.err = msg.err
+		return m, tea.Quit
 	}
 	var cmd tea.Cmd
 	m.list, cmd = m.list.Update(msg)
 	if m.list.Choice != "" {
-		return m, writePathToFile(m.list.Choice)
+		path := m.list.Choice
+		m.list.Choice = ""
+		return m, openSubShell(path)
 	}
 	return m, cmd
 }

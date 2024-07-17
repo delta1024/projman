@@ -2,29 +2,28 @@ package main
 
 import (
 	"os"
+	"os/exec"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
-func writePathToFile(path string) tea.Cmd {
-	return func () tea.Msg {
-		file, err := os.CreateTemp("", "ProjManCd")
-		defer file.Close()
-		if err != nil {
-			return writeFileError{msg: err}
-		}
-		_, err = file.WriteString(path)
-		if err != nil {
-			return writeFileError{msg: err}
-		}
-		return writeFileDone{}
-	}
+
+
+type spawnError struct {
+	err error
 }
 
-type writeFileDone struct {}
-type writeFileError struct{
-	msg error
-}
-func (e writeFileError) Error() string  {
-	return e.msg.Error()
+func (e spawnError) Error() string {
+	return e.err.Error()
 }
 
+func openSubShell(path string) tea.Cmd {
+	cmd := exec.Command("bash")
+	cmd.Dir = path
+	cl := exec.Command("clear")
+	cl.Dir = path
+	return tea.Sequence(
+		tea.ExecProcess(cl, nil),
+		tea.ExecProcess(cmd, func(err error) tea.Msg {
+			return spawnError{err: err}
+		}), tea.ClearScreen)
+}

@@ -7,6 +7,7 @@ import (
 type keyMap struct {
 	Quit key.Binding
 	Add  key.Binding
+	Remove key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
@@ -27,6 +28,10 @@ func defaultKeys() keyMap {
 		Add: key.NewBinding(
 			key.WithKeys("a"),
 			key.WithHelp("a", "add"),
+		),
+		Remove: key.NewBinding(
+			key.WithKeys("r"),
+			key.WithHelp("r", "remove"),
 		),
 	}
 }

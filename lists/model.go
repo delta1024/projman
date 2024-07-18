@@ -12,6 +12,7 @@ import (
 )
 const listHeight = 14
 
+const DefaultTitle =  "Select project"
 var (
 	titleStyle        = lipgloss.NewStyle().MarginLeft(2)
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
@@ -90,7 +91,7 @@ func New(paths []string) Model  {
 	const defaultWidth = 20
 
 	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
-	l.Title = "Please select a project"
+	l.Title = DefaultTitle
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
 	l.Styles.PaginationStyle = paginationStyle

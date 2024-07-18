@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
@@ -14,6 +15,7 @@ type mode int
 const (
 	SelectMode mode = iota - 1
 	AddMode
+	RemoveMode
 )
 
 type model struct {
@@ -46,11 +48,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.Quit):
+			if (m.mode == RemoveMode) {
+				m.mode = SelectMode
+				m.list.List.Title = lists.DefaultTitle
+				return m, nil
+			}
 			return m, saveData(m.items)
 		case key.Matches(msg, m.keys.Add):
 			m.mode = AddMode
 			m.fp = dirs.New()
 			return m, m.fp.Init()
+		case key.Matches(msg, m.keys.Remove):
+			m.mode = RemoveMode
+			m.list.List.Title = "Remove project"
+			return m, nil
 		}
 	case loadDataErrMsg:
 	panic(msg.err)
@@ -69,6 +80,22 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			path := m.list.Choice
 			m.list.Choice = ""
 			return m, openSubShell(path)
+		}
+		return m, cmd
+	case RemoveMode:
+		var cmd tea.Cmd
+		m.list, cmd = m.list.Update(msg)
+		if m.list.Choice != "" {
+			newList := make([]string, 0)
+			for _, proj := range m.items {
+				if strings.Compare(m.list.Choice, proj) != 0 {
+					newList = append(newList, proj)
+				}
+			}
+			m.items = newList
+			m.list = lists.New(newList)
+			m.mode = SelectMode
+			return m, nil
 		}
 		return m, cmd
 	case AddMode:
@@ -96,11 +123,9 @@ func (m model) View() string {
 		return m.err.Error()
 	}
 	switch m.mode {
-	case SelectMode:
-		return "\n" + m.list.View()
 	case AddMode:
 		return "\n" + m.fp.View()
 	default:
-		return ""
+		return "\n" + m.list.View()
 	}
 }

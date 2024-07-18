@@ -19,24 +19,24 @@ const (
 )
 
 type model struct {
-	mode mode
-	keys keyMap
-	help help.Model
-	list lists.Model
-	items []string
-	fp   dirs.Model
+	mode       mode
+	keys       keyMap
+	help       help.Model
+	list       lists.Model
+	items      []string
+	fp         dirs.Model
 	dataLoaded bool
-	err  error
+	err        error
 }
 
 func newModel() model {
 	return model{
-		mode: SelectMode,
-		keys: defaultKeys(),
-		help: help.New(),
-		items: make([]string, 0),
+		mode:       SelectMode,
+		keys:       defaultKeys(),
+		help:       help.New(),
+		items:      make([]string, 0),
 		dataLoaded: false,
-		list: lists.New([]string{ }),
+		list:       lists.New([]string{}),
 	}
 }
 
@@ -48,7 +48,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.Quit):
-			if (m.mode == RemoveMode) {
+			if m.mode == RemoveMode {
 				m.mode = SelectMode
 				m.list.List.Title = lists.DefaultTitle
 				return m, nil
@@ -64,7 +64,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 	case loadDataErrMsg:
-	panic(msg.err)
+		panic(msg.err)
 	case loadedDataMsg:
 		m.items = msg.data
 		m.list = lists.New(m.items)
@@ -105,12 +105,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.mode = SelectMode
 			if !m.dataLoaded {
 
-			m.items = append(m.items, m.fp.Selected)
+				m.items = append(m.items, m.fp.Selected)
 			} else {
 				m.dataLoaded = true
-			m.items = make([]string, 1)
+				m.items = make([]string, 1)
 				m.items[0] = m.fp.Selected
-		}
+			}
 			m.list = lists.New(m.items)
 			return m, nil
 		}

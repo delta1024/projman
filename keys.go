@@ -5,8 +5,8 @@ import (
 )
 
 type keyMap struct {
-	Quit key.Binding
-	Add  key.Binding
+	Quit   key.Binding
+	Add    key.Binding
 	Remove key.Binding
 }
 

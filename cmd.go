@@ -71,9 +71,6 @@ func (e savedDataErrMsg) Error() string {
 }
 func saveData(data []string) tea.Cmd {
 	return func() tea.Msg {
-		if len(data) == 0 {
-			return savedDataFinishedMsg{}
-		}
 		dataFile, err := xdg.DataFile("projman/projects.txt")
 
 		if err != nil {
@@ -89,11 +86,11 @@ func saveData(data []string) tea.Cmd {
 		if err != nil {
 			return savedDataErrMsg{err: err}
 		}
+		if len(data) == 0 {
+			return savedDataFinishedMsg{}
+		}
 		for _, str := range data {
 			file.WriteString(str + "\n")
-		}
-		if err != nil {
-			return savedDataErrMsg{err: err}
 		}
 		file.Sync()
 		return savedDataFinishedMsg{}

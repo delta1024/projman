@@ -52,6 +52,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.mode = SelectMode
 				m.list.List.Title = lists.DefaultTitle
 				return m, nil
+			} else if m.mode == AddMode {
+				m.mode = SelectMode
+				return m, nil
 			}
 			return m, saveData(m.items)
 		case key.Matches(msg, m.keys.Add):

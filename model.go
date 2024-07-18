@@ -1,6 +1,7 @@
 package main
 
 import (
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
@@ -20,7 +21,9 @@ type model struct {
 	keys keyMap
 	help help.Model
 	list lists.Model
+	items []string
 	fp   dirs.Model
+	dataLoaded bool
 	err  error
 }
 
@@ -29,29 +32,34 @@ func newModel() model {
 		mode: SelectMode,
 		keys: defaultKeys(),
 		help: help.New(),
-		list: lists.New([]string{
-			"/home/jake/code/go/projman",
-			"/home/jake/code/zig/projman",
-		}),
+		items: make([]string, 0),
+		dataLoaded: false,
+		list: lists.New([]string{ }),
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return loadData
 }
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.Quit):
-			return m, tea.Quit
+			return m, saveData(m.items)
 		case key.Matches(msg, m.keys.Add):
 			m.mode = AddMode
 			m.fp = dirs.New()
 			return m, m.fp.Init()
 		}
-	case spawnError:
+	case loadDataErrMsg:
+	panic(msg.err)
+	case loadedDataMsg:
+		m.items = msg.data
+		m.list = lists.New(m.items)
 		return m, nil
+	case savedDataFinishedMsg:
+		return m, tea.Quit
 	}
 	switch m.mode {
 	case SelectMode:
@@ -67,13 +75,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.fp, cmd = m.fp.Update(msg)
 		if m.fp.Selected != "" {
-			items := m.list.List.Items()
-			var strs []string
-			for _, item := range items {
-				strs = append(strs, string(item.(lists.Item)))
-			}
 			m.mode = SelectMode
-			m.list = lists.New(append(strs, m.fp.Selected))
+			if !m.dataLoaded {
+
+			m.items = append(m.items, m.fp.Selected)
+			} else {
+				m.dataLoaded = true
+			m.items = make([]string, 1)
+				m.items[0] = m.fp.Selected
+		}
+			m.list = lists.New(m.items)
 			return m, nil
 		}
 		return m, cmd

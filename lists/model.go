@@ -83,7 +83,7 @@ func (m Model) View() string {
 	return "\n" + m.List.View()
 }
 func New(paths []string) Model  {
-	var items []list.Item
+	items := make([]list.Item, 0)
 	for _, path := range paths {
 		items = append(items, Item(path))
 	}

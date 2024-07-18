@@ -36,7 +36,7 @@ func newModel() model {
 		help:       help.New(),
 		items:      make([]string, 0),
 		dataLoaded: false,
-		list:       lists.New([]string{}),
+		list:       lists.New([]string{}, defaultKeys().ShortHelp()),
 	}
 }
 
@@ -70,7 +70,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		panic(msg.err)
 	case loadedDataMsg:
 		m.items = msg.data
-		m.list = lists.New(m.items)
+		m.list = lists.New(m.items, m.keys.ShortHelp())
 		return m, nil
 	case savedDataFinishedMsg:
 		return m, tea.Quit
@@ -96,7 +96,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			m.items = newList
-			m.list = lists.New(newList)
+			m.list = lists.New(newList,m.keys.ShortHelp())
 			m.mode = SelectMode
 			return m, nil
 		}
@@ -114,7 +114,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.items = make([]string, 1)
 				m.items[0] = m.fp.Selected
 			}
-			m.list = lists.New(m.items)
+			m.list = lists.New(m.items, m.keys.ShortHelp())
 			return m, nil
 		}
 		return m, cmd

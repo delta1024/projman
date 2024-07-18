@@ -11,11 +11,11 @@ type keyMap struct {
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Quit, k.Add}
+	return []key.Binding{k.Add, k.Remove}
 }
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Quit, k.Add},
+		{k.Add, k.Remove},
 	}
 }
 

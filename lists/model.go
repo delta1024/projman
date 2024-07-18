@@ -83,7 +83,7 @@ func (m Model) View() string {
 	}
 	return "\n" + m.List.View()
 }
-func New(paths []string) Model  {
+func New(paths []string, keys []key.Binding) Model  {
 	items := make([]list.Item, 0)
 	for _, path := range paths {
 		items = append(items, Item(path))
@@ -97,14 +97,10 @@ func New(paths []string) Model  {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 	l.AdditionalShortHelpKeys = func() []key.Binding {
-		return []key.Binding{
-			DefaultKeyMap().Select,
-		}
+		return append(keys, DefaultKeyMap().Select)	
 	}
 	l.AdditionalFullHelpKeys = func() []key.Binding {
-		return []key.Binding {
-			DefaultKeyMap().Select,
-		}
+			return append(keys, DefaultKeyMap().Select)
 	}
 
 	 return Model{List: l, Keys: DefaultKeyMap()}

@@ -6,14 +6,15 @@ import (
 
 type keyMap struct {
 	Quit key.Binding
+	Add  key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Quit}
+	return []key.Binding{k.Quit, k.Add}
 }
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Quit},
+		{k.Quit, k.Add},
 	}
 }
 
@@ -22,6 +23,10 @@ func defaultKeys() keyMap {
 		Quit: key.NewBinding(
 			key.WithKeys("ctrl+c", "q"),
 			key.WithHelp("q", "quit"),
+		),
+		Add: key.NewBinding(
+			key.WithKeys("a"),
+			key.WithHelp("a", "add"),
 		),
 	}
 }

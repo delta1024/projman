@@ -8,6 +8,7 @@ type keyMap struct {
 	Quit   key.Binding
 	Add    key.Binding
 	Remove key.Binding
+	Settings key.Binding
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
@@ -15,7 +16,7 @@ func (k keyMap) ShortHelp() []key.Binding {
 }
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Add, k.Remove},
+		{k.Add, k.Remove, k.Settings},
 	}
 }
 
@@ -32,6 +33,10 @@ func defaultKeys() keyMap {
 		Remove: key.NewBinding(
 			key.WithKeys("r"),
 			key.WithHelp("r", "remove"),
+		),
+		Settings: key.NewBinding(
+			key.WithKeys("s"),
+			key.WithHelp("s", "settings"),
 		),
 	}
 }

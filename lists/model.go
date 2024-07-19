@@ -83,7 +83,7 @@ func (m Model) View() string {
 	}
 	return "\n" + m.List.View()
 }
-func New(paths []string, keys []key.Binding) Model  {
+func NewNoExt(paths []string, keys []key.Binding) Model {
 	items := make([]list.Item, 0)
 	for _, path := range paths {
 		items = append(items, Item(path))
@@ -101,6 +101,29 @@ func New(paths []string, keys []key.Binding) Model  {
 	}
 	l.AdditionalFullHelpKeys = func() []key.Binding {
 			return append(keys, DefaultKeyMap().Select)
+	}
+
+	 return Model{List: l, Keys: DefaultKeyMap()}
+	
+}
+func New(paths []string, keys []key.Binding , extra key.Binding) Model  {
+	items := make([]list.Item, 0)
+	for _, path := range paths {
+		items = append(items, Item(path))
+	}
+	const defaultWidth = 20
+
+	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
+	l.Title = DefaultTitle
+	l.SetShowStatusBar(false)
+	l.SetFilteringEnabled(false)
+	l.Styles.PaginationStyle = paginationStyle
+	l.Styles.HelpStyle = helpStyle
+	l.AdditionalShortHelpKeys = func() []key.Binding {
+		return append(keys, DefaultKeyMap().Select)	
+	}
+	l.AdditionalFullHelpKeys = func() []key.Binding {
+			return append(keys, extra, DefaultKeyMap().Select)
 	}
 
 	 return Model{List: l, Keys: DefaultKeyMap()}

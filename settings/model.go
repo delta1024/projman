@@ -155,7 +155,7 @@ func newFp() filepicker.Model {
 	return fp
 }
 func newList() lists.Model {
-	l := lists.New(allowedShells, nil)
+	l := lists.NewNoExt(allowedShells, nil)
 	l.List.Title = "Choose Shell"
 	return l
 }

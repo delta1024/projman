@@ -1,9 +1,6 @@
 package dirs
 
 import (
-	"os"
-	"path"
-
 	"github.com/charmbracelet/bubbles/filepicker"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -14,17 +11,13 @@ type Model struct {
 	Selected   string
 }
 
-func New() Model  {
+func New(defDir string) Model  {
 	fp := filepicker.New()
 	fp.FileAllowed = false
 	fp.DirAllowed = true
 	fp.Height = height
 	fp.AutoHeight = false
-	dir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-	fp.CurrentDirectory = path.Join(dir, "code")
+	fp.CurrentDirectory = defDir
 	return Model{
 		filepicker: fp,
 	}

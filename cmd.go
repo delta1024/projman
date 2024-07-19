@@ -10,14 +10,18 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func openSubShell(path string) tea.Cmd {
-	cmd := exec.Command("bash")
+func openSubShell(path, shell string, clear bool) tea.Cmd {
+	cmd := exec.Command(shell)
 	cmd.Dir = path
 	cl := exec.Command("clear")
 	cl.Dir = path
+	if clear {
 	return tea.Sequence(
 		tea.ExecProcess(cl, nil),
 		tea.ExecProcess(cmd, nil), tea.ClearScreen)
+	} else {
+		return tea.ExecProcess(cmd, nil)
+	}
 }
 
 type noSavedDataMsg struct{}

@@ -43,7 +43,7 @@ type Model struct {
 
 
 func (m Model) Init() tea.Cmd {
-	return nil
+	return LoadSettings
 }
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -76,7 +76,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				}
 			case key.Matches(msg, m.keys.Done):
 				m.Done = true
-				return m, tea.Quit
+				return m, SaveSettings(m.Settings)
 			}
 
 		}

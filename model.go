@@ -1,5 +1,4 @@
 package main
-
 import (
 	// "strings"
 
@@ -45,7 +44,7 @@ func newModel() model {
 
 func (m model) Init() tea.Cmd {
 	// return loadData
-	return nil
+	return m.settings.Init()
 }
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// switch msg := msg.(type) {
@@ -124,6 +123,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// 	return m, cmd
 	// }
 	// return m, nil
+	switch msg := msg.(type) {
+	case settings.SettingsLoadedMsg:
+		m.settings = settings.New(msg.Settings)
+		return m, nil
+	case settings.SettingsSavedMsg:
+		return m, tea.Quit
+	}
 	var cmd tea.Cmd
 	m.settings, cmd = m.settings.Update(msg)
 	return m, cmd
